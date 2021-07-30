@@ -83,7 +83,7 @@ class ProductController extends Controller
                     $newCoverName = Yii::$app->security->generateRandomString();
                     $model->image = $newCoverName . '.' . $newCover->extension;
                     $newCover->saveAs('covers/' . $newCoverName . '.' . $newCover->extension);
-                } 
+                }
                 if (!$model->save()) {
                     throw new Exception('Unable to save data! ' . $model->errorMessage);
                 }
@@ -122,8 +122,10 @@ class ProductController extends Controller
     {
         $model = $this->findModel($id);
         $oldImage = $model->image;
+        $stock = ProductWarehouse::findOne(['product_id'=>$model->id]);
         $model->image = '/covers/' . $model->image ?? '/covers/noimage.png';
-        $stock = new ProductWarehouse();
+        $model->inStock = $stock->quantity;
+
         if ($model->load(Yii::$app->request->post())) {
             $transaction = Yii::$app->getDb()->beginTransaction();
             try {
