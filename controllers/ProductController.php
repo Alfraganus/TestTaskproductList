@@ -133,13 +133,16 @@ class ProductController extends Controller
                 if (isset($newCover)) {
                     $newCoverName = Yii::$app->security->generateRandomString();
                     $model->image = $newCoverName . '.' . $newCover->extension;
-                    $newCover->saveAs($newCoverName . '.' . $newCover->extension);
+                    if (!$newCover->saveAs('covers/' . $newCoverName . '.' . $newCover->extension)) {
+                        throw new Exception('Unable to save data! ' . $model->errorMessage);
+                    }
                 } else {
                     $model->image = $oldImage;
                 }
                 if (!$model->save()) {
                     throw new Exception('Unable to save data! ' . $model->errorMessage);
                 }
+
                 $stock->product_id = $model->id;
                 $stock->quantity = $model->inStock;
                 if (!$stock->save()) {
