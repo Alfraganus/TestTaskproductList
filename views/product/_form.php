@@ -19,7 +19,7 @@ $productTypes = \yii\helpers\ArrayHelper::map(\app\models\ProductTypes::find()->
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'title')->textInput(['maxlength' => true,'placeholder'=>'Title of product']) ?>
 
     <?= $form->field($model, 'image')->widget(FileInput::classname(), [
         'options' => ['accept' => 'image/*'],
@@ -33,6 +33,7 @@ $productTypes = \yii\helpers\ArrayHelper::map(\app\models\ProductTypes::find()->
         ],
     ]); ?>
 
+    <?= $form->field($model, 'inStock')->textInput(['placeholder'=>'quantity in stock']) ?>
     <?= $form->field($model, 'sku')->textInput(['value'=>$valueSku,'readonly'=>true]) ?>
 
 

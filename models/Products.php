@@ -25,6 +25,7 @@ class Products extends \yii\db\ActiveRecord
     {
         return 'products';
     }
+    public $inStock;
 
     /**
      * {@inheritdoc}
@@ -33,7 +34,7 @@ class Products extends \yii\db\ActiveRecord
     {
         return [
             [[ 'sku', 'title'], 'required'],
-            [['product_type'], 'integer'],
+            [['product_type','inStock'], 'integer'],
             [['image'], 'file'],
             [[ 'sku', 'title'], 'string', 'max' => 255],
             [['product_type'], 'exist', 'skipOnError' => true, 'targetClass' => ProductTypes::className(), 'targetAttribute' => ['product_type' => 'id']],

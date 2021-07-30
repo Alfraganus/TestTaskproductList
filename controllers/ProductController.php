@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\ProductWarehouse;
 use Yii;
 use app\models\Products;
 use app\models\search\Products as ProductsSearch;
@@ -73,12 +74,33 @@ class ProductController extends Controller
     public function actionCreate()
     {
         $model = new Products();
+        $stock = new ProductWarehouse();
         if ($model->load(Yii::$app->request->post())) {
-            $newCover = UploadedFile::getInstance($model, 'image');
-            $newCoverName = Yii::$app->security->generateRandomString();
-            $model->image = $newCoverName . '.' . $newCover->extension;
-            $newCover->saveAs('covers/' . $newCoverName . '.' . $newCover->extension);
-            $model->save();
+            $transaction = Yii::$app->getDb()->beginTransaction();
+            try {
+                $newCover = UploadedFile::getInstance($model, 'image');
+                if (isset($newCover)) {
+                    $newCoverName = Yii::$app->security->generateRandomString();
+                    $model->image = $newCoverName . '.' . $newCover->extension;
+                    $newCover->saveAs('covers/' . $newCoverName . '.' . $newCover->extension);
+                }
+                if (!$model->save()) {
+                    throw new Exception('Unable to save data! ' . $model->errorMessage);
+                }
+
+                $stock->product_id = $model->id;
+                $stock->quantity = $model->inStock;
+                if (!$stock->save()) {
+                    throw new Exception('Unable to save data! ' . $model->errorMessage);
+                }
+
+                $transaction->commit();
+            } catch (\Exception $e) {
+                $message = $e->getMessage();
+                $transaction->rollBack();
+                Yii::$app->getSession()->setFlash('error', $message);
+                Yii::error($message, __METHOD__);
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         }
             $sku = Yii::$app->security->generateRandomString(20);
@@ -100,20 +122,35 @@ class ProductController extends Controller
     {
         $model = $this->findModel($id);
         $oldImage = $model->image;
-       $model->image = '/covers/'.$model->image??'/covers/noimage.png';
-        if ($model->load(Yii::$app->request->post())  ) {
-
-            $newCover = UploadedFile::getInstance($model, 'image');
-
-            if(isset($newCover)){
-                $newCoverName = Yii::$app->security->generateRandomString();
-                $model->image =  $newCoverName . '.' . $newCover->extension;
-                $newCover->saveAs( $newCoverName . '.' . $newCover->extension);
-            } else {
-                $model->image = $oldImage;
+        $model->image = '/covers/' . $model->image ?? '/covers/noimage.png';
+        $stock = new ProductWarehouse();
+        if ($model->load(Yii::$app->request->post())) {
+            $transaction = Yii::$app->getDb()->beginTransaction();
+            try {
+                $newCover = UploadedFile::getInstance($model, 'image');
+                if (isset($newCover)) {
+                    $newCoverName = Yii::$app->security->generateRandomString();
+                    $model->image = $newCoverName . '.' . $newCover->extension;
+                    $newCover->saveAs($newCoverName . '.' . $newCover->extension);
+                } else {
+                    $model->image = $oldImage;
+                }
+                if (!$model->save()) {
+                    throw new Exception('Unable to save data! ' . $model->errorMessage);
+                }
+                $stock->product_id = $model->id;
+                $stock->quantity = $model->inStock;
+                if (!$stock->save()) {
+                    throw new Exception('Unable to save data! ' . $model->errorMessage);
+                }
+                $transaction->commit();
+            } catch (\Exception $e) {
+                $message = $e->getMessage();
+                $transaction->rollBack();
+                Yii::$app->getSession()->setFlash('error', $message);
+                Yii::error($message, __METHOD__);
             }
 
-            $model->save();
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
