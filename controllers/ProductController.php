@@ -83,7 +83,7 @@ class ProductController extends Controller
                     $newCoverName = Yii::$app->security->generateRandomString();
                     $model->image = $newCoverName . '.' . $newCover->extension;
                     $newCover->saveAs('covers/' . $newCoverName . '.' . $newCover->extension);
-                }
+                } 
                 if (!$model->save()) {
                     throw new Exception('Unable to save data! ' . $model->errorMessage);
                 }

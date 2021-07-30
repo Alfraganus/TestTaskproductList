@@ -27,6 +27,7 @@ class Products extends \yii\db\ActiveRecord
     }
     public $inStock;
 
+
     /**
      * {@inheritdoc}
      */

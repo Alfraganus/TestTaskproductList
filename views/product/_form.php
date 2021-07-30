@@ -42,7 +42,6 @@ $productTypes = \yii\helpers\ArrayHelper::map(\app\models\ProductTypes::find()->
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>
-
     <?php ActiveForm::end(); ?>
 
 </div>
