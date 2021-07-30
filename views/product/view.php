@@ -42,6 +42,10 @@ if(empty($model->image)) {
                 'format' => 'html',
             ],
             'sku',
+            [
+                'attribute' => 'Left in stock',
+                'value' =>$model->productWarehouses->quantity,
+            ],
 
             [
                 'attribute' => 'product_type',
