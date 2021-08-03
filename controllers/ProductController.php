@@ -45,8 +45,9 @@ class ProductController extends Controller
     public function actionIndex()
     {
         $searchModel = new ProductsSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->pagination->defaultPageSize = 10;
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -103,7 +104,7 @@ class ProductController extends Controller
             }
             return $this->redirect(['view', 'id' => $model->id]);
         }
-            $sku = Yii::$app->security->generateRandomString(20);
+        $sku = Yii::$app->security->generateRandomString(20);
 
         return $this->render('create', [
             'model' => $model,
