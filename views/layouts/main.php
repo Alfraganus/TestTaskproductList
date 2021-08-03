@@ -37,7 +37,7 @@ AppAsset::register($this);
     ]);
 
     if (Yii::$app->user->isGuest) {
-        $menuItems[] = ['label' => 'About', 'url' => ['/site/about']];
+        $menuItems[] = ['label' => 'код на github', 'url' => 'https://github.com/Alfraganus/TestTaskproductList'];
         $menuItems[] = ['label' => 'Signup', 'url' => ['/user/create']];
         $menuItems[] = ['label' => 'Login for admin', 'url' => ['/site/login']];
 
